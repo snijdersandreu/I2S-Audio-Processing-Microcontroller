@@ -11,6 +11,11 @@ float vReal[SAMPLES];
 uint16_t sample_rate = SAMPLE_RATE;
 I2SStream in;
 
+float normalize(uint16_t sample) {
+    int16_t signedSample = sample;
+    return signedSample / 32768.0;
+}
+
 void setup(){
   Serial.begin(115200);
   AudioLogger::instance().begin(Serial, AudioLogger::Error);
@@ -33,23 +38,25 @@ void setup(){
   Serial.println("I2S started...");
 }
 
+// ara mateix només agafo mostres de canal left, podria agafar mostres left i right per separat, calcular FFT de cadascuna i despres combinar les FFTs
+
 void loop() {
   uint8_t buffer[4]; // Buffer for two 16-bit samples (stereo)
 
   for (int i = 0; i < SAMPLES; i++) {
     if (in.readBytes(buffer, 4) == 4) {
-      int16_t sample = buffer[0] | (buffer[1] << 8); // Using only the left channel
-      vReal[i] = sample; // Direct assignment without windowing
+      uint16_t sample = buffer[0] | (buffer[1] << 8); // Using only the left channel
+      vReal[i] = normalize(sample); // Direct assignment without windowing
     } else {
       vReal[i] = 0;
     }
   }
 
   for (int i = 0; i < 30; i++) { 
-    Serial.print(vReal[i]);
-    Serial.print(" ");
+    Serial.println(vReal[i]);
+    //Serial.print(" ");
   }
-  Serial.println();
-  delay(5000); // Delay for a bit before the next batch
+  //Serial.println();
+  delay(10); // Delay for a bit before the next batch
 }
 
