@@ -45,7 +45,7 @@ void loop() {
 
   for (int i = 0; i < SAMPLES; i++) {
     if (in.readBytes(buffer, 4) == 4) {
-      uint16_t sample = buffer[0] | (buffer[1] << 8); // Using only the left channel
+      uint16_t sample = buffer[0] | (buffer[1] << 8); // Using only the left channel little endian
       vReal[i] = normalize(sample); // Direct assignment without windowing
     } else {
       vReal[i] = 0;
@@ -53,10 +53,10 @@ void loop() {
   }
 
   for (int i = 0; i < 30; i++) { 
-    Serial.println(vReal[i]);
-    //Serial.print(" ");
+    Serial.print(vReal[i]);
+    Serial.print(" ");
   }
-  //Serial.println();
-  delay(10); // Delay for a bit before the next batch
+  Serial.println();
+  delay(100); // Delay for a bit before the next batch
 }
 
