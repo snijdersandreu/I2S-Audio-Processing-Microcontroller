@@ -15,7 +15,7 @@ The final code of this project is [i2sFFTWebpage](src/i2sFFTWebpage.cpp). In thi
     - [I2S fetching](#i2s-fetching)
     - [Windowing](#windowing)
     - [FFT](#fft)
-    - [Band Bins](#band-bins)
+    - [Bands and scaling of the values](#bands-and-scaling-of-the-values)
     - [Webpage](#webpage)
         - [Base Webpage](#base-webpage)
         - [Refreshing Values](#refreshing-values)
@@ -49,7 +49,7 @@ Describe the windowing technique applied to the audio data before FFT processing
 ### FFT
 Detail the FFT process used to analyze the audio signal's frequency content.
 
-### Band Bins
+### Bands and scaling of the values
 Discuss how the FFT results are divided into frequency bands and how these bands correspond to different elements of the fountain.
 
 ### Webpage
