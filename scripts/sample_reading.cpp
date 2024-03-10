@@ -53,7 +53,7 @@ void loop() {
   }
 
   for (int i = 0; i < 30; i++) { 
-    Serial.print(vReal[i]);
+    Serial.print(vReal[i], 6);
     Serial.print(" ");
   }
   Serial.println();

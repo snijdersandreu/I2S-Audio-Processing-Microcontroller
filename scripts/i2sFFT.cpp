@@ -24,7 +24,6 @@ float emaBinnedFFT[NUM_BANDS] = {0};
 
 int bandLowerBin[NUM_BANDS];
 
-// uint16_t sample_rate = SAMPLE_RATE;
 I2SStream in;
 
 float normalize(uint16_t sample)
@@ -33,26 +32,28 @@ float normalize(uint16_t sample)
   return signedSample / 32768.0;
 }
 
-void fetchAndWindowSamples()
-{
-  uint8_t buffer[4]; // Buffer for two 16-bit samples (stereo)
+void fetchAndWindowSamples() {
+    uint8_t buffer[4]; // Buffer for two 16-bit samples (stereo)
 
-  for (int i = 0; i < SAMPLES; i++)
-  {
-    if (in.readBytes(buffer, 4) == 4)
-    {
-      uint16_t sample = buffer[0] | (buffer[1] << 8); // Using only the left channel
-      // Apply windowing and normalizing the sample
-      vReal[i] = normalize(sample) * (0.5 * (1.0 - cos(2 * PI * i / (SAMPLES - 1))));
-      vImag[i] = 0;
+    for (int i = 0; i < SAMPLES; i++) {
+        if (in.readBytes(buffer, 4) == 4) {
+            uint16_t sample = buffer[0] | (buffer[1] << 8); // Using only the left channel
+            // Normalize the sample
+            float normalizedSample = normalize(sample);
+            // Apply a threshold filter before windowing
+            if (abs(normalizedSample) < 0.003) {
+                normalizedSample = 0;
+            }
+            // Apply windowing to the (possibly filtered) normalized sample
+            vReal[i] = normalizedSample * (0.5 * (1.0 - cos(2 * PI * i / (SAMPLES - 1))));
+            vImag[i] = 0;
+        } else {
+            vReal[i] = 0;
+            vImag[i] = 0;
+        }
     }
-    else
-    {
-      vReal[i] = 0;
-      vImag[i] = 0;
-    }
-  }
 }
+
 
 void performFFT()
 {
@@ -91,9 +92,6 @@ void binToOctaveBands(float vReal[], uint16_t sampleRate, size_t nFFTPoints, flo
     // Truncate values to the 0 to 1 range
     binnedFFT[i] = binnedFFT[i] > 1 ? 1 : binnedFFT[i];
   }
-
-  // The additional check for all values below the noise threshold is omitted
-  // as the normalization and truncation steps ensure meaningful values are retained
 }
 
 
